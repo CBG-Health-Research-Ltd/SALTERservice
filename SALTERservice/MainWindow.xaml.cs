@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
@@ -31,6 +32,7 @@ namespace SALTERservice
         public MainWindow()
         {
             InitializeComponent();
+            initialiseSurveyorInfo();
             StartBleDeviceWatcher();
         }
 
@@ -51,18 +53,18 @@ namespace SALTERservice
 
         private void button_Click(object sender, RoutedEventArgs e)
         {
-            //CSV conversion must go here with appropriate handling. Currently checking for decimal point at string position 2
+            //CSV conversion must go here with appropriate handling. Currently checking for decimal point in measurement
             try
             {
-                if (iteratingMeasurements[0, 1].Substring(0, 2).Contains(".") && iteratingMeasurements[1, 1].Substring(0, 2).Contains("."))
+                if (arrayMeasurements[1, 1].Substring(0, 3).Contains(".") && arrayMeasurements[2, 1].Substring(0, 3).Contains("."))
                 {
-                    string csv = ArrayToCsv(iteratingMeasurements);
+                    string csv = ArrayToCsv(arrayMeasurements);
                     WriteCSVFile(csv);                   
                     Application.Current.Shutdown();
                 }
                 else
                 {
-                    MessageBox.Show("Incorrect weight format. \n\n Please ensure you've collected results using Bluetooth Laser");
+                    MessageBox.Show("Incorrect weight format. \n\n Please ensure you've collected results using Salter Scales");
                 }
             }
             catch
@@ -529,8 +531,37 @@ namespace SALTERservice
         List<decimal> measurementList = new List<decimal>();
         string absolutefinal;
         List<string[]> allMeasurements = new List<string[]>();
-        string[,] iteratingMeasurements = new string[2, 2];
 
+        string[,] arrayMeasurements = new string[3, 6];
+        private void initialiseSurveyorInfo()
+        {
+            arrayMeasurements[0, 0] = "MeasureType";
+            arrayMeasurements[0, 1] = "Measurement";
+            arrayMeasurements[0, 2] = "Qtr";
+            arrayMeasurements[0, 3] = "MB";
+            arrayMeasurements[0, 4] = "HHID";
+            arrayMeasurements[0, 5] = "RespondentID";
+            string[] respondentInfo = GetRespondentIdentifiers();
+            arrayMeasurements[1, 2] = respondentInfo[0];
+            arrayMeasurements[1, 3] = respondentInfo[1];
+            arrayMeasurements[1, 4] = respondentInfo[2];
+            arrayMeasurements[1, 5] = respondentInfo[3];
+            arrayMeasurements[2, 2] = respondentInfo[0];
+            arrayMeasurements[2, 3] = respondentInfo[1];
+            arrayMeasurements[2, 4] = respondentInfo[2];
+            arrayMeasurements[2, 5] = respondentInfo[3];
+
+
+        }
+
+        private string[] GetRespondentIdentifiers()
+        {
+            string respIDs = File.ReadLines(@"C:\NZHS\surveyinstructions\MeasurementInfo.txt").First();
+            string[] respIDSplit = respIDs.Split('+');
+            return respIDSplit;
+        }
+
+        bool isThirdMeasurement = false;
         private async void Characteristic_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
         {
             //transfer characteristic value of Ibuffer type to a byte array
@@ -553,14 +584,14 @@ namespace SALTERservice
                     if (allMeasurements.Count == 1)
                     {
                         SetW1Measurement(loggedMeasurement[1]);//first measurement will only be set from loggedMeasurement when one measure has been taken
-                        iteratingMeasurements[0, 0] = "WT";
-                        iteratingMeasurements[0, 1] = loggedMeasurement[1];
+                        arrayMeasurements[1, 0] = "WT";
+                        arrayMeasurements[1, 1] = loggedMeasurement[1];
                      }
                     if (allMeasurements.Count == 2)
                     {
                         SetW2Measurement(loggedMeasurement[1]);//2nd measurement only set when 2 measurements have been taken
-                        iteratingMeasurements[1, 0] = "WT";
-                        iteratingMeasurements[1, 1] = loggedMeasurement[1];
+                        arrayMeasurements[2, 0] = "WT";
+                        arrayMeasurements[2, 1] = loggedMeasurement[1];
                         //string[,] arrayMeasurements = CreateRectangularArray(allMeasurements);
                         //string csvMeasurements = ArrayToCsv(arrayMeasurements);
                         //WriteCSVFile(csvMeasurements);

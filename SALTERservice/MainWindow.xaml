@@ -8,13 +8,17 @@
         Title="MainWindow" Height="800" Width="515">
     <Grid Margin="0,10,0,0">
         <TextBlock x:Name="AppTitle" HorizontalAlignment="Left" Margin="39,29,0,670" Text="Salter Weight Measurement" TextWrapping="Wrap" Width="429" FontSize="32" TextAlignment="Center"/>
-        <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="69,96,0,0" Text="Please stand briefly on scale to allow bluetooth connection" TextWrapping="Wrap" VerticalAlignment="Top" Width="368" FontSize="14" Height="30"/>
+        <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="52,96,0,0" Text="Please stand briefly on scale to allow bluetooth connection" TextWrapping="Wrap" VerticalAlignment="Top" Width="415" FontSize="16" Height="30"/>
         <TextBlock x:Name="textBlock1" HorizontalAlignment="Left" Margin="52,148,0,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="24" Height="42" Width="206"><Run Text="Connection Status"/><Run Text=":"/><LineBreak/><Run/></TextBlock>
-        <TextBlock x:Name="textBlock2" HorizontalAlignment="Left" Margin="151,270,0,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="20" Width="60"><Run Text="W1"/><Run Text=":"/></TextBlock>
-        <TextBlock x:Name="textBlock3" HorizontalAlignment="Left" Margin="151,386,0,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="20"><Run Text="W2"/><Run Text=":"/></TextBlock>
-        <Button x:Name="button" Content="Done Measuring" Margin="151,537,155.8,0" VerticalAlignment="Top" FontSize="20" Click="button_Click"/>
-        <TextBlock x:Name="W1Measurement" HorizontalAlignment="Left" Margin="282,271,0,0" Text="-Empty-" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="20"/>
-        <TextBlock x:Name="W2Measurement" HorizontalAlignment="Left" Margin="282,387,0,0" Text="-Empty-" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="20"/>
+        <TextBlock x:Name="textBlock2" HorizontalAlignment="Left" Margin="125,208,0,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="20" Width="60"><Run Text="W1"/><Run Text=":"/></TextBlock>
+        <TextBlock x:Name="textBlock3" HorizontalAlignment="Left" Margin="125,307,0,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="20"><Run Text="W2"/><Run Text=":"/></TextBlock>
+        <Button x:Name="button" Content="Done Measuring" Margin="183,537,171.8,0" VerticalAlignment="Top" FontSize="20" Click="button_Click" Height="38"/>
+        <TextBlock x:Name="W1Measurement" HorizontalAlignment="Left" Margin="310,208,0,0" Text="-Empty-" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="20"/>
+        <TextBlock x:Name="W2Measurement" HorizontalAlignment="Left" Margin="310,312,0,0" Text="-Empty-" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="20"/>
         <TextBlock x:Name="Connectionstatus" HorizontalAlignment="Left" Margin="294,152,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="Disconnected" FontSize="20"/>
+        <TextBlock x:Name="textBlock4" HorizontalAlignment="Left" Margin="69,368,0,0" Text="Text will go here which alerts surveyor to take the third measurement" TextWrapping="Wrap" VerticalAlignment="Top" Width="368" FontSize="16" Height="43"/>
+        <TextBlock x:Name="textBlock5" HorizontalAlignment="Left" Margin="125,452,0,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="20"><Run Text="W2"/><Run Text=":"/></TextBlock>
+        <TextBlock x:Name="W3Measurement" HorizontalAlignment="Left" Margin="311,452,0,0" Text="-Empty-" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="20"/>
+        <Button x:Name="button1" Content="Done Measuring" Margin="183,537,171.8,0" VerticalAlignment="Top" FontSize="20" Click="button_Click" Height="38"/>
     </Grid>
 </Window>
