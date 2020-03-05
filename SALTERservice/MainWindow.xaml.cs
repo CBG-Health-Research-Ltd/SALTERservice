@@ -38,7 +38,14 @@ namespace SALTERservice
 
         public void updateConnectionStatus(string text)
         {
-            Application.Current.Dispatcher.Invoke(() => { Connectionstatus.Text = text; });
+            if (text == "CONNECTED")
+            {
+                Application.Current.Dispatcher.Invoke(() => { Connectionstatus.Text = text; Connectionstatus.Foreground = Brushes.Green; });
+            }
+            if (text == "Disconnected")
+            {
+                Application.Current.Dispatcher.Invoke(() => { Connectionstatus.Text = text; Connectionstatus.Foreground = Brushes.Black; });
+            }
         }
 
         public void SetW1Measurement(string text)
@@ -51,25 +58,77 @@ namespace SALTERservice
             Application.Current.Dispatcher.Invoke(() => { W2Measurement.Text = text; });
         }
 
+        public void SetW3Measurement(string text)
+        {
+            Application.Current.Dispatcher.Invoke(() => { W3Measurement.Text = text; });
+        }
+
         private void button_Click(object sender, RoutedEventArgs e)
         {
             //CSV conversion must go here with appropriate handling. Currently checking for decimal point in measurement
+            decimal measurement1;
+            decimal measurement2;
             try
             {
-                if (arrayMeasurements[1, 1].Substring(0, 3).Contains(".") && arrayMeasurements[2, 1].Substring(0, 3).Contains("."))
+                if (arrayMeasurements[1, 1].Contains(".") && arrayMeasurements[2, 1].Contains("."))//Checking for decimal point existing
                 {
-                    string csv = ArrayToCsv(arrayMeasurements);
-                    WriteCSVFile(csv);                   
-                    Application.Current.Shutdown();
+                    measurement1 = ConvertStrToDec(arrayMeasurements[1, 1]);
+                    measurement2 = ConvertStrToDec(arrayMeasurements[2, 1]);
+                    if (CheckGreaterOnePercentDiff(measurement1, measurement2) == false)//Checking that there is a less than 1% difference between two measurements
+                    {
+                        string csv = ArrayToCsv(arrayMeasurements);
+                        WriteCSVFile(csv);
+                        Application.Current.Shutdown();
+                    }
+                    else
+                    {
+                        //Input has a greater than 1% difference therefore a third measurement is required.
+                        isThirdMeasurement = true;
+                        textBlock4.Visibility = Visibility.Visible;
+                        textBlock5.Visibility = Visibility.Visible;
+                        W3Measurement.Visibility = Visibility.Visible;
+                        button.Visibility = Visibility.Hidden;
+                        button.IsEnabled = false;
+                        button1.Visibility = Visibility.Visible;
+                    }
                 }
                 else
                 {
-                    MessageBox.Show("Incorrect weight format. \n\n Please ensure you've collected results using Salter Scales");
+                    MessageBox.Show("Incorrect weight format. \n\n Please ensure you've collected results using Salter Scales.\n\n" +
+                        "If entering manually, ensure the measurement is exactly what is shown on scales.\n\n" +
+                        "The measurement expected is 1 decimal place. For example 70 kg must be input as 70.0");
                 }
             }
             catch
             {
-                MessageBox.Show("Please enter some measurements");
+                MessageBox.Show("Please enter some measurements and ensure you've collected results using Salter Scales.\n\n" +
+                   "If entering manually, ensure the measurement is exactly what is shown on scales.\n\n" +
+                       "The measurement expected is 1 decimal place. For example 70 kg must be input as 70.0");
+            }
+        }
+
+        private void button1_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (arrayMeasurements[3, 1].Contains("."))//Checking for decimal point existing
+                {
+                        string csv = ArrayToCsv(arrayMeasurements);
+                        WriteCSVFile(csv);
+                        Application.Current.Shutdown();
+                }
+                else
+                {
+                    MessageBox.Show("Incorrect weight format. \n\n Please ensure you've collected results using Salter Scales.\n\n" +
+                        "If entering manually, ensure the measurement is exactly what is shown on scales.\n\n" +
+                        "The measurement expected is 1 decimal place. For example 70 kg must be input as 70.0");
+                }
+            }
+            catch
+            {
+                MessageBox.Show("Please enter some measurements and ensure you've collected results using Salter Scales.\n\n" +
+                    "If entering manually, ensure the measurement is exactly what is shown on scales.\n\n" +
+                        "The measurement expected is 1 decimal place. For example 70 kg must be input as 70.0");
             }
         }
 
@@ -532,7 +591,7 @@ namespace SALTERservice
         string absolutefinal;
         List<string[]> allMeasurements = new List<string[]>();
 
-        string[,] arrayMeasurements = new string[3, 6];
+        string[,] arrayMeasurements = new string[4, 6];
         private void initialiseSurveyorInfo()
         {
             arrayMeasurements[0, 0] = "MeasureType";
@@ -550,6 +609,10 @@ namespace SALTERservice
             arrayMeasurements[2, 3] = respondentInfo[1];
             arrayMeasurements[2, 4] = respondentInfo[2];
             arrayMeasurements[2, 5] = respondentInfo[3];
+            arrayMeasurements[3, 2] = respondentInfo[0];
+            arrayMeasurements[3, 3] = respondentInfo[1];
+            arrayMeasurements[3, 4] = respondentInfo[2];
+            arrayMeasurements[3, 5] = respondentInfo[3];
 
 
         }
@@ -561,7 +624,8 @@ namespace SALTERservice
             return respIDSplit;
         }
 
-        bool isThirdMeasurement = false;
+        bool isThirdMeasurement = false; //This bool needs to be set when taking third measurement, and re-set for any manual entry for 1st two measurements.
+
         private async void Characteristic_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
         {
             //transfer characteristic value of Ibuffer type to a byte array
@@ -581,13 +645,13 @@ namespace SALTERservice
                     measurementList.Clear();//Clearing the list stops GetFinalresult() from retrieving multiple final values
                     string[] loggedMeasurement = { "WT", absolutefinal };
                     allMeasurements.Add(loggedMeasurement);
-                    if (allMeasurements.Count == 1)
+                    if ((allMeasurements.Count == 1) && (isThirdMeasurement == false))
                     {
                         SetW1Measurement(loggedMeasurement[1]);//first measurement will only be set from loggedMeasurement when one measure has been taken
                         arrayMeasurements[1, 0] = "WT";
                         arrayMeasurements[1, 1] = loggedMeasurement[1];
                      }
-                    if (allMeasurements.Count == 2)
+                    if ((allMeasurements.Count == 2) && (isThirdMeasurement == false))
                     {
                         SetW2Measurement(loggedMeasurement[1]);//2nd measurement only set when 2 measurements have been taken
                         arrayMeasurements[2, 0] = "WT";
@@ -596,6 +660,13 @@ namespace SALTERservice
                         //string csvMeasurements = ArrayToCsv(arrayMeasurements);
                         //WriteCSVFile(csvMeasurements);
                         allMeasurements.Clear();
+                    }
+                    if (isThirdMeasurement == true)//The third measurement option has been open due to greater than 1% difference.
+                    {
+                        SetW3Measurement(loggedMeasurement[1]);//3rd measurement setting
+                        arrayMeasurements[3, 0] = "WT";
+                        arrayMeasurements[3, 1] = loggedMeasurement[1];
+                        allMeasurements.Clear(); //resets the list, 
                     }
                 }
 
@@ -721,6 +792,44 @@ namespace SALTERservice
                 registeredCharacteristic.ValueChanged -= Characteristic_ValueChanged;
                 registeredCharacteristic = null;
                 subscribedForNotifications = false;
+            }
+        }
+
+        private decimal ConvertStrToDec(string value)
+        {
+            decimal convert = Convert.ToDecimal(value);
+            return convert;
+        }
+
+        private bool CheckGreaterOnePercentDiff(decimal value1, decimal value2)
+        {
+            if (value1 > value2)
+            {
+                decimal percent = ((value1 / value2) * 100);
+                if (percent > 101)
+                {
+                    return true; //true indicating that there is a higher than 1% difference
+                }
+                else
+                {
+                    return false; //false indicating that the difference is within 1%
+                }
+            }
+            else if (value2 > value1)
+            {
+                decimal percent = ((value2 / value1) * 100);
+                if (percent > 101)
+                {
+                    return true; //true indicating that there is a higher than 1% difference
+                }
+                else
+                {
+                    return false; //false indicating that the difference is within 1%
+                }
+            }
+            else
+            {
+                return false; // All other cases false as value1 and value2 will be equal
             }
         }
 
@@ -1173,8 +1282,9 @@ namespace SALTERservice
             public static readonly Guid ResultCharacteristicUuid = Guid.Parse("caec2ebc-e1d9-11e6-bf01-fe55135034f4");
         };
 
+
         #endregion
 
-       
+
     }
 }
