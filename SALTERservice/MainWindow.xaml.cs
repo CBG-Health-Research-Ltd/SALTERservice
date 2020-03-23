@@ -860,38 +860,6 @@ namespace SALTERservice
                 decimal d = (decimal)Int64.Parse(hexarray, System.Globalization.NumberStyles.HexNumber) / 20;
                 measurementList.Add(d); 
                 decimal tempFinal = GetFinalresult();//start timer in Getfinalresult once condition is met. Only log result if timer has elapsed two seconds
-                /*if (tempFinal != 0) //transmission complete set in timer time out in GetFinalResult()
-                {
-                    absolutefinal = tempFinal.ToString("0.0");
-                    measurementList.Clear();//Clearing the list stops GetFinalresult() from retrieving multiple final values
-                    string[] loggedMeasurement = { "WT", absolutefinal };
-                    allMeasurements.Add(loggedMeasurement);
-                    if ((allMeasurements.Count == 1) && (isThirdMeasurement == false))
-                    {
-                        SetW1Measurement(loggedMeasurement[1]);//first measurement will only be set from loggedMeasurement when one measure has been taken
-                        arrayMeasurements[1, 0] = "WT";
-                        arrayMeasurements[1, 1] = loggedMeasurement[1];
-                     }
-                    if ((allMeasurements.Count == 2) && (isThirdMeasurement == false))
-                    {
-                        SetW2Measurement(loggedMeasurement[1]);//2nd measurement only set when 2 measurements have been taken
-                        arrayMeasurements[2, 0] = "WT";
-                        arrayMeasurements[2, 1] = loggedMeasurement[1];
-                        //string[,] arrayMeasurements = CreateRectangularArray(allMeasurements);
-                        //string csvMeasurements = ArrayToCsv(arrayMeasurements);
-                        //WriteCSVFile(csvMeasurements);
-                        allMeasurements.Clear();
-                    }
-                    if (isThirdMeasurement == true)//The third measurement option has been open due to greater than 1% difference.
-                    {
-                        SetW3Measurement(loggedMeasurement[1]);//3rd measurement setting
-                        arrayMeasurements[3, 0] = "WT";
-                        arrayMeasurements[3, 1] = loggedMeasurement[1];
-                        allMeasurements.Clear(); //resets the list, 
-                    }
-                }*/
-
-
             }
             finalMeasurementList = measurementList;
         }
@@ -921,7 +889,7 @@ namespace SALTERservice
                     if (measurecalc == 5)
                     {
                         //Set up timespan of 2 seconds to await any other final results that may be transmitted                       
-                        dispatcherTimer.Interval = new TimeSpan(0, 0, 4);
+                        dispatcherTimer.Interval = new TimeSpan(0, 0, 3);
                         dispatcherTimer.IsEnabled = true;
                         dispatcherTimer.Start();
                         return measurementList[measureCount - 1];                      
@@ -953,6 +921,9 @@ namespace SALTERservice
                     SetW1Measurement(loggedMeasurement[1]);//first measurement will only be set from loggedMeasurement when one measure has been taken
                     arrayMeasurements[1, 0] = "WT";
                     arrayMeasurements[1, 1] = loggedMeasurement[1];
+                    MessageBox.Show("Please take 5 seconds for respondent to re-position themselves for re-taking measurement.\n\n" +
+                    "2nd measurement will be enabled after 5 seconds.");
+                    Thread.Sleep(5000);
                 }
                 if ((allMeasurements.Count == 2) && (isThirdMeasurement == false))
                 {
