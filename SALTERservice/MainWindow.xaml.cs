@@ -93,6 +93,11 @@ namespace SALTERservice
                     {
                         //Input has a greater than 1% difference therefore a third measurement is required.
                         isThirdMeasurement = true;
+                        MessageBox.Show("Third measurement required.\n\nPlease take 5 seconds for respondent to re-position themselves for re-taking measurement.\n\n" +
+                        "3rd measurement will be enabled after 5 seconds of closing this message.");
+                        Thread.Sleep(5000);
+                        clear1.IsEnabled = false;
+                        clear2.IsEnabled = false;
                         textBlock4.Visibility = Visibility.Visible;
                         textBlock5.Visibility = Visibility.Visible;
                         clear3.Visibility = Visibility.Visible;
@@ -179,6 +184,9 @@ namespace SALTERservice
                     {
                         //Disable first two measurement boxes. Enable third measurement box, shift focus to third measurement, disable Done measuring Box, 
                         //enable submit final measurements.
+                        MessageBox.Show("Third measurement required.\n\nPlease take 5 seconds for respondent to re-position themselves for re-taking measurement.\n\n" +
+                        "3rd measurement will be enabled after 5 seconds of closing this message.");
+                        Thread.Sleep(5000);
                         W1Measurement.IsEnabled = false;
                         W2Measurement.IsEnabled = false;
                         button.IsEnabled = false;
@@ -194,12 +202,16 @@ namespace SALTERservice
                         button3.Visibility = Visibility.Visible;
                         button3.IsEnabled = true;
                         textBlock6_Copy1.Visibility = Visibility.Visible;
+                        W1Measurement_TextBox.IsEnabled = false;
+                        W2Measurement_TextBox.IsEnabled = false;
                         W3Measurement.Visibility = Visibility.Hidden;
                         W3Measurement_TextBox.Visibility = Visibility.Visible;
                         W3Measurement.IsEnabled = false;
                         W3Measurement_TextBox.IsEnabled = true;
                         textBlock4.Visibility = Visibility.Visible;
                         textBlock5.Visibility = Visibility.Visible;
+                        clear1.IsEnabled = false;
+                        clear2.IsEnabled = false;
                         clear3.Visibility = Visibility.Visible;
                     }
 
@@ -283,6 +295,52 @@ namespace SALTERservice
             regexOverride = false;
         }
 
+        //Clearing measurements from indivudal fields
+        private void clear1_Click(object sender, RoutedEventArgs e)
+        {
+            regexOverride = true;
+            if (manualMeasurement == true)
+            {
+                Application.Current.Dispatcher.Invoke(() => { W1Measurement_TextBox.Clear(); });
+                W1Measurement_TextBox.Focus();
+            }
+            else
+            {
+                Application.Current.Dispatcher.Invoke(() => { W1Measurement.Text = "-Empty-"; });
+            }
+            regexOverride = false;
+        }
+
+        private void clear2_Click(object sender, RoutedEventArgs e)
+        {
+            regexOverride = true;
+            if (manualMeasurement == true)
+            {
+                Application.Current.Dispatcher.Invoke(() => { W2Measurement_TextBox.Clear(); });
+                W2Measurement_TextBox.Focus();
+            }
+            else
+            {
+                Application.Current.Dispatcher.Invoke(() => { W2Measurement.Text = "-Empty-"; });
+            }
+            regexOverride = false;
+        }
+
+        private void clear3_Click(object sender, RoutedEventArgs e)
+        {
+            regexOverride = true;
+            if (manualMeasurement == true)
+            {
+                Application.Current.Dispatcher.Invoke(() => { W3Measurement_TextBox.Clear(); });
+                W3Measurement_TextBox.Focus();
+            }
+            else
+            {
+                Application.Current.Dispatcher.Invoke(() => { W3Measurement.Text = "-Empty-"; });
+            }
+            regexOverride = false;
+        }
+
         public void RunCleanUp()
         {
             //reset all measruements
@@ -311,6 +369,8 @@ namespace SALTERservice
                 button.Visibility = Visibility.Hidden;
                 button2.IsEnabled = true;
                 button2.Visibility = Visibility.Visible;
+                W1Measurement_TextBox.IsEnabled = true;
+                W2Measurement_TextBox.IsEnabled = true;
             }
             else //Bluetooth measuring so setting initial button again.
             {
@@ -1581,8 +1641,9 @@ namespace SALTERservice
 
 
 
+
         #endregion
 
-
+  
     }
 }

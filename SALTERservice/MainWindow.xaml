@@ -29,8 +29,8 @@
         <CheckBox x:Name="checkBox" Content="Manual Measurement" HorizontalAlignment="Left" Margin="75,172,0,0" VerticalAlignment="Top" FontSize="14" Height="22" Width="168" Checked="checkBox_Checked" Unchecked="checkBox_Unchecked"/>
         <Button x:Name="button2" Content="Done Measuring" Margin="171,519,170.2,0" VerticalAlignment="Top" FontSize="20" Click="button2_Click" Height="38" Visibility="Hidden"/>
         <Button x:Name="button3" Content="Done Measuring" Margin="171,519,170.4,0" VerticalAlignment="Top" FontSize="20" Click="button3_Click" Height="38" Visibility="Hidden"/>
-        <Button x:Name="clear1" Content="X" HorizontalAlignment="Left" Margin="431,210,0,0" VerticalAlignment="Top" Width="23" FontSize="20" FontFamily="Lucida Console" Background="White" Foreground="#FFDD1B1B" BorderBrush="#FF0B0B0B"/>
-        <Button x:Name="clear2" Content="X" HorizontalAlignment="Left" Margin="432,293,0,0" VerticalAlignment="Top" Width="23" FontSize="20" FontFamily="Lucida Console" Background="White" Foreground="#FFDD1B1B" BorderBrush="#FF0B0B0B"/>
-        <Button x:Name="clear3" Content="X" HorizontalAlignment="Left" Margin="432,455,0,0" VerticalAlignment="Top" Width="23" FontSize="20" FontFamily="Lucida Console" Background="White" Foreground="#FFDD1B1B" Visibility="Hidden" BorderBrush="#FF0B0B0B" RenderTransformOrigin="0.435,-0.707"/>
+        <Button x:Name="clear1" Content="X" HorizontalAlignment="Left" Margin="431,210,0,0" VerticalAlignment="Top" Width="23" FontSize="20" FontFamily="Lucida Console" Background="White" Foreground="#FFDD1B1B" BorderBrush="#FF0B0B0B" Click="clear1_Click"/>
+        <Button x:Name="clear2" Content="X" HorizontalAlignment="Left" Margin="432,293,0,0" VerticalAlignment="Top" Width="23" FontSize="20" FontFamily="Lucida Console" Background="White" Foreground="#FFDD1B1B" BorderBrush="#FF0B0B0B" Click="clear2_Click"/>
+        <Button x:Name="clear3" Content="X" HorizontalAlignment="Left" Margin="432,455,0,0" VerticalAlignment="Top" Width="23" FontSize="20" FontFamily="Lucida Console" Background="White" Foreground="#FFDD1B1B" Visibility="Hidden" BorderBrush="#FF0B0B0B" RenderTransformOrigin="0.435,-0.707" Click="clear3_Click"/>
     </Grid>
 </Window>
