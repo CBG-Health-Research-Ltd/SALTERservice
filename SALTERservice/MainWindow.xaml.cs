@@ -36,12 +36,20 @@ namespace SALTERservice
         public MainWindow()
         {
             InitializeComponent();
+
+            //retrieves surveorInfo stored by sample manager
             initialiseSurveyorInfo();
+
+            //This timer lets us retrieve the absolute final value. It needs to be set here in order for global varibales to act accordingly, otherwise
+            //they are cleared after the final result data-check.
             dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
+
+            //starts looking for Salter BT device
             StartBleDeviceWatcher();
 
         }
 
+        //Update UI to display connection status
         public void updateConnectionStatus(string text)
         {
             if (text == "CONNECTED")
@@ -55,6 +63,7 @@ namespace SALTERservice
             
         }
 
+        //For use in obtaining measurements from manual entry
         public void SetW1Measurement(string text)
         {
             Application.Current.Dispatcher.Invoke(() => { W1Measurement.Text = text; });
@@ -77,9 +86,9 @@ namespace SALTERservice
             decimal measurement2;
             try
             {
-                if (arrayMeasurements[1, 1].Contains(".") && arrayMeasurements[2, 1].Contains("."))//Checking for decimal point existing
+                if (arrayMeasurements[1, 1].Contains(".") && arrayMeasurements[2, 1].Contains("."))//Checking for decimal point existing. This could be improved?
                 {
-                    arrayMeasurements[1, 6] = "BluetoothInput";
+                    arrayMeasurements[1, 6] = "BluetoothInput";//Set as BluetoothInput for logging's sake
                     arrayMeasurements[2, 6] = "BluetoothInput";
                     measurement1 = ConvertStrToDec(arrayMeasurements[1, 1]);
                     measurement2 = ConvertStrToDec(arrayMeasurements[2, 1]);
@@ -112,19 +121,21 @@ namespace SALTERservice
                 }
                 else
                 {
+                    //A decimal point is not present. BT transmission always sends a decimal point.
                     MessageBox.Show("Incorrect weight format. \n\n Please ensure you've collected results using Salter Scales.\n\n" +
                         "If entering manually, ensure the measurement is exactly what is shown on scales.\n\n" +
                         "The measurement expected is 1 decimal place. For example 70 kg must be input as 70.0");
                 }
             }
             catch
-            {
+            {   //array is indexed in appropriately, therefore null measurement or uncorrect measurement format
                 MessageBox.Show("Please enter some measurements and ensure you've collected results using Salter Scales.\n\n" +
                    "If entering manually, ensure the measurement is exactly what is shown on scales.\n\n" +
                        "The measurement expected is 1 decimal place. For example 70 kg must be input as 70.0");
             }
         }
 
+        //This button is for the third measurement for a BT input.
         private void button1_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -137,20 +148,21 @@ namespace SALTERservice
                         Application.Current.Shutdown();
                 }
                 else
-                {
+                {   //A decimal point is not present. BT transmission always sends a decimal point.
                     MessageBox.Show("Incorrect weight format. \n\n Please ensure you've collected results using Salter Scales.\n\n" +
                         "If entering manually, ensure the measurement is exactly what is shown on scales.\n\n" +
                         "The measurement expected is 1 decimal place. For example 70 kg must be input as 70.0");
                 }
             }
             catch
-            {
+            {   //array is indexed in appropriately, therefore null measurement or uncorrect measurement format
                 MessageBox.Show("Please enter some measurements and ensure you've collected results using Salter Scales.\n\n" +
                     "If entering manually, ensure the measurement is exactly what is shown on scales.\n\n" +
                         "The measurement expected is 1 decimal place. For example 70 kg must be input as 70.0");
             }
         }
 
+        //This button is for the first attempt at logging two manual measurements.
         private void button2_Click(object sender, RoutedEventArgs e)
         {
             //In the case of button3 click, manualmeasurement == true. So all existing string input must be converted to decimal and added appropriately to arrayMeasurements.
@@ -168,9 +180,10 @@ namespace SALTERservice
                 arrayMeasurements[2, 1] = W2Measurement_TextBox.Text;
                 arrayMeasurements[1, 6] = "ManualInput";
                 arrayMeasurements[2, 6] = "ManualInput";
+                char check1dp1stmeasurement = arrayMeasurements[1, 1][arrayMeasurements[1, 1].IndexOf(".") + 1];
 
-                //Checking for decimal point for all weight possibilities. Using same verification as BT measurement.
-                if ((arrayMeasurements[1, 1][2] == '.' && arrayMeasurements[2, 1][2] == '.') || (arrayMeasurements[1, 1][3] == '.' && arrayMeasurements[2, 1][3] == '.'))
+                //Checking for decimal point for all weight possibilities. Using same verification as BT measurement. 
+                if (arrayMeasurements[1, 1].Contains(".")  && arrayMeasurements[2, 1].Contains("."))
                 {
                     measurement1 = ConvertStrToDec(arrayMeasurements[1, 1]);
                     measurement2 = ConvertStrToDec(arrayMeasurements[2, 1]);
@@ -244,7 +257,7 @@ namespace SALTERservice
                 arrayMeasurements[3, 1] = W3Measurement_TextBox.Text;
                 arrayMeasurements[3, 6] = "ManualInput";
 
-                if ((arrayMeasurements[3, 1][2] == '.') || (arrayMeasurements[3, 1][3] == '.'))
+                if ((arrayMeasurements[3, 1].Contains(".")))//Check for decimal place existing
                 {
                     string csv = ArrayToCsv(arrayMeasurements);
                     WriteCSVFile(csv);
@@ -264,6 +277,7 @@ namespace SALTERservice
                        "The measurement expected is 1 decimal place. For example 70 kg must be input as 70.0");
             }
         }
+
 
         bool manualMeasurement = false;
         bool regexOverride = false;//allows usage of text box clear operations to delte old results by not having regex applied to user input
@@ -341,6 +355,7 @@ namespace SALTERservice
             regexOverride = false;
         }
 
+        //This is run when setting manualMeasurement on or off via checkbox. Clears all fields and re-sets for taking 1st measurement.
         public void RunCleanUp()
         {
             //reset all measruements
@@ -782,7 +797,7 @@ namespace SALTERservice
                 Guid characteristicGUID;
                 string characteristicname = DisplayHelpers.GetCharacteristicName(c);
               
-                if (characteristicname == "SimpleKeyState")
+                if (characteristicname == "SimpleKeyState")//The characteristic used to transfer data from measurements from scales
                 {
                     var SALTERcharacteristic = c;
                     characteristicGUID = c.Uuid;
@@ -792,6 +807,9 @@ namespace SALTERservice
             }
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         }
+
+        //Subscribe to the "SimpleKeystate" characteristic which is where measurements are sent via the shitty salter encryption. Note there's some leftover code
+        //in here from the UWP app it was modified from to accomodate salter.
         private async void SubscribeToCharacteristic()
         {
 
@@ -867,7 +885,7 @@ namespace SALTERservice
         }
 
    
-
+        //set up the csv for storing measurements. individual csv file per measurement, not a master file.
         string[,] arrayMeasurements = new string[4, 7];
         private void initialiseSurveyorInfo()
         {
@@ -895,6 +913,7 @@ namespace SALTERservice
 
         }
 
+        //Retrieves all respondent specific information generated from sample manager
         private string[] GetRespondentIdentifiers()
         {
             string respIDs = File.ReadLines(@"C:\NZHS\surveyinstructions\MeasurementInfo.txt").First();
@@ -902,11 +921,14 @@ namespace SALTERservice
             return respIDSplit;
         }
 
+        //This is the actual event fired by a BT transmission from scales. It handles the stream and puts it into correct format with help from dispatcher Timer event
+        //and 5 consecutive measurement check get final result function.
         bool isThirdMeasurement = false; //This bool needs to be set when taking third measurement, and re-set for any manual entry for 1st two measurements.
         static List<decimal> measurementList = new List<decimal>();
         static List<decimal> finalMeasurementList = new List<decimal>();
         string absolutefinal;
         List<string[]> allMeasurements = new List<string[]>();
+
         private async void Characteristic_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
         {
             //transfer characteristic value of Ibuffer type to a byte array
@@ -917,22 +939,19 @@ namespace SALTERservice
                 
                 string hexarray = ByteArrayToString(array).Substring(8);
                 int arraylength = hexarray.Length;
-                decimal d = (decimal)Int64.Parse(hexarray, System.Globalization.NumberStyles.HexNumber) / 20;
-                measurementList.Add(d); 
+                decimal d = (decimal)Int64.Parse(hexarray, System.Globalization.NumberStyles.HexNumber) / 20; //The "encryption" for the salter scales
+                measurementList.Add(d); //This list continues to populate until cleared by timer event fire.
                 decimal tempFinal = GetFinalresult();//start timer in Getfinalresult once condition is met. Only log result if timer has elapsed two seconds
             }
-            finalMeasurementList = measurementList;
+            finalMeasurementList = measurementList; //pre-cautionary re-assignment of measurement list to be used in acquiring the absolute final
         }
 
-        private async void WriteCSVFile(string csvMeasurements)
-        {
-            System.IO.Directory.CreateDirectory(@"C:\BodyMeasurements\WeightMeasurements");
-            string CSVFileName = @"C:\BodyMeasurements\WeightMeasurements\" + "WeightMeasurements_" + DateTime.Now.ToString("yyyy-MM-ddTHH-mm-ss") + ".csv";
-
-            System.IO.File.WriteAllText(CSVFileName, csvMeasurements);
-        }
+        //This awaits the 5 consecutive equal measruements from the characteristic value changed handler, i.e. the BT transmission. majority of the time
+        //5 consecutive measurements are enough to determine a final value, sometimes though the scale quickly sends a final value that is different and displays
+        //different to the 5 consecutives. This is handled by implementing the dispatcherTimer and recieving absolute final value.
 
         System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
+
         bool transmissionComplete = false;
         private decimal GetFinalresult()
         {
@@ -949,7 +968,7 @@ namespace SALTERservice
                     if (measurecalc == 5)
                     {
                         //Set up timespan of 2 seconds to await any other final results that may be transmitted                       
-                        dispatcherTimer.Interval = new TimeSpan(0, 0, 3);
+                        dispatcherTimer.Interval = new TimeSpan(0, 0, 3);//3 seconds seems to be reliable, yet every now and then we get a 0.1 error.
                         dispatcherTimer.IsEnabled = true;
                         dispatcherTimer.Start();
                         return measurementList[measureCount - 1];                      
@@ -963,6 +982,9 @@ namespace SALTERservice
             return 0;
         }
 
+        //This timer is set once the 5 consecutive measurements have been detected. The scales sometimes display a value they don't actually transmit if the respondent
+        //Steps on them in an awakward way or has a last second movement. This timer fires to ensure the last permitted result is required. I.e a measurement
+        //defined by a byte length of six. Any other byte lengths are on/off events.
         private void dispatcherTimer_Tick(object sender, EventArgs e)
         {
             
@@ -1005,10 +1027,11 @@ namespace SALTERservice
             }
         }
 
+        //Three functions below handle all the manual input cases. allowing only numeric values and decimal place. 
         string previousInput = "";
         private void W1Measurement_TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (regexOverride == false)
+            if (regexOverride == false) //Regex override allows the clear button to be used as it doesn't work if regex is applied.
             {
                 Regex r = new Regex("^-{0,1}\\d+\\.{0,1}\\d*$"); // This is the main part, can be altered to match any desired form or limitations
                 Match m = r.Match(W1Measurement_TextBox.Text);
@@ -1030,7 +1053,7 @@ namespace SALTERservice
         string previousInput1 = "";
         private void W2Measurement_TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (regexOverride == false)
+            if (regexOverride == false)//Regex override allows the clear button to be used as it doesn't work if regex is applied.
             {
                 Regex r = new Regex("^-{0,1}\\d+\\.{0,1}\\d*$"); // This is the main part, can be altered to match any desired form or limitations
                 Match m = r.Match(W2Measurement_TextBox.Text);
@@ -1052,7 +1075,7 @@ namespace SALTERservice
         string previousInput2 = "";
         private void W3Measurement_TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (regexOverride == false)
+            if (regexOverride == false)//Regex override allows the clear button to be used as it doesn't work if regex is applied.
             {
                 Regex r = new Regex("^-{0,1}\\d+\\.{0,1}\\d*$"); // This is the main part, can be altered to match any desired form or limitations
                 Match m = r.Match(W3Measurement_TextBox.Text);
@@ -1071,7 +1094,16 @@ namespace SALTERservice
             }
         }
 
+        //Salter scales sepcific csv file write
+        private async void WriteCSVFile(string csvMeasurements)
+        {
+            System.IO.Directory.CreateDirectory(@"C:\BodyMeasurements\WeightMeasurements");
+            string CSVFileName = @"C:\BodyMeasurements\WeightMeasurements\" + "WeightMeasurements_" + DateTime.Now.ToString("yyyy-MM-ddTHH-mm-ss") + ".csv";
 
+            System.IO.File.WriteAllText(CSVFileName, csvMeasurements);
+        }
+
+        //Wrtie 2d array to format expected of csv
         static string ArrayToCsv(string[,] values)
         {
             // Get the bounds.
@@ -1097,6 +1129,7 @@ namespace SALTERservice
             return sb.ToString();
         }
 
+        //Generate a 2d array that can be sent through arraytocsv to store values
         static T[,] CreateRectangularArray<T>(IList<T[]> arrays)
         {
             // TODO: Validation and special-casing for arrays.Count == 0
@@ -1128,7 +1161,7 @@ namespace SALTERservice
             return hex.ToString();
         }
 
-
+        //Characteristic value changed handler instantiation for handling event of new BT data stream
         private void AddValueChangedHandler()
         {
             //ValueChangedSubscribeToggle.Content = "Unsubscribe from value changes";
@@ -1140,6 +1173,7 @@ namespace SALTERservice
             }
         }
 
+        //Get rid of characteristic value changed handler, i.e. the actual transmission of BT data event
         private void RemoveValueChangedHandler()
         {
             //ValueChangedSubscribeToggle.Content = "Subscribe to value changes";
@@ -1157,6 +1191,7 @@ namespace SALTERservice
             return convert;
         }
 
+        //check that there is less than 1% difference between measurements taken
         private bool CheckGreaterOnePercentDiff(decimal value1, decimal value2)
         {
             if (value1 > value2)
@@ -1191,6 +1226,8 @@ namespace SALTERservice
 
 
         #endregion
+
+        //These regions are left here in case there is any further development. Do not worry about them.
 
         #region Display Helpers
 
