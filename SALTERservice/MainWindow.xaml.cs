@@ -312,15 +312,18 @@ namespace SALTERservice
         //Clearing measurements from indivudal fields
         private void clear1_Click(object sender, RoutedEventArgs e)
         {
+            clearWasclicked = true; //setting this to true allows us to override the set up warnings when clearing first BT measurement. It must be set to false where measurement added to array.
             regexOverride = true;
             if (manualMeasurement == true)
             {
+                
                 Application.Current.Dispatcher.Invoke(() => { W1Measurement_TextBox.Clear(); });
                 W1Measurement_TextBox.Focus();
             }
             else
             {
                 Application.Current.Dispatcher.Invoke(() => { W1Measurement.Text = "-Empty-"; });
+                allMeasurements.Clear();
             }
             regexOverride = false;
         }
@@ -336,6 +339,9 @@ namespace SALTERservice
             else
             {
                 Application.Current.Dispatcher.Invoke(() => { W2Measurement.Text = "-Empty-"; });
+                allMeasurements.Clear();
+                string[] temp = { "temp", "temp" };
+                allMeasurements.Add(temp); //allows a temp value to be added to allmeasurements so secodn value re-fires. second value only added if allmeasurements.count == 2
             }
             regexOverride = false;
         }
@@ -985,6 +991,7 @@ namespace SALTERservice
         //This timer is set once the 5 consecutive measurements have been detected. The scales sometimes display a value they don't actually transmit if the respondent
         //Steps on them in an awakward way or has a last second movement. This timer fires to ensure the last permitted result is required. I.e a measurement
         //defined by a byte length of six. Any other byte lengths are on/off events.
+        bool clearWasclicked = false;
         private void dispatcherTimer_Tick(object sender, EventArgs e)
         {
             
@@ -1003,9 +1010,18 @@ namespace SALTERservice
                     SetW1Measurement(loggedMeasurement[1]);//first measurement will only be set from loggedMeasurement when one measure has been taken
                     arrayMeasurements[1, 0] = "WT";
                     arrayMeasurements[1, 1] = loggedMeasurement[1];
-                    MessageBox.Show("Please take 5 seconds for respondent to re-position themselves for re-taking measurement.\n\n" +
-                    "2nd measurement will be enabled after 5 seconds.");
-                    Thread.Sleep(5000);
+                    if (clearWasclicked == false)
+                    {
+                        SetW2Measurement("Wait..");
+                        MessageBox.Show("Please take 5 seconds for respondent to re-position themselves for re-taking measurement.\n\n" +
+                        "2nd measurement will be enabled 5 seconds after closing this message.");
+                        Thread.Sleep(5000);
+                        SetW2Measurement("-Empty-");
+                    }
+                    else
+                    {
+                        clearWasclicked = false;
+                    }
                 }
                 if ((allMeasurements.Count == 2) && (isThirdMeasurement == false))
                 {
