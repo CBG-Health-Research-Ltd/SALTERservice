@@ -32,5 +32,6 @@
         <Button x:Name="clear1" Content="X" HorizontalAlignment="Left" Margin="431,210,0,0" VerticalAlignment="Top" Width="23" FontSize="20" FontFamily="Lucida Console" Background="White" Foreground="#FFDD1B1B" BorderBrush="#FF0B0B0B" Click="clear1_Click"/>
         <Button x:Name="clear2" Content="X" HorizontalAlignment="Left" Margin="432,293,0,0" VerticalAlignment="Top" Width="23" FontSize="20" FontFamily="Lucida Console" Background="White" Foreground="#FFDD1B1B" BorderBrush="#FF0B0B0B" Click="clear2_Click"/>
         <Button x:Name="clear3" Content="X" HorizontalAlignment="Left" Margin="432,455,0,0" VerticalAlignment="Top" Width="23" FontSize="20" FontFamily="Lucida Console" Background="White" Foreground="#FFDD1B1B" Visibility="Hidden" BorderBrush="#FF0B0B0B" RenderTransformOrigin="0.435,-0.707" Click="clear3_Click"/>
+        <TextBlock x:Name="waiting3rdMeasurement" HorizontalAlignment="Left" Margin="130,352,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Visibility="Hidden" Width="273"><Run Text="Waiting for third measurement re-positioning"/><Run Text="...."/></TextBlock>
     </Grid>
 </Window>

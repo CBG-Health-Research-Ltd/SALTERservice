@@ -102,8 +102,10 @@ namespace SALTERservice
                     {
                         //Input has a greater than 1% difference therefore a third measurement is required.
                         isThirdMeasurement = true;
+                        waiting3rdMeasurement.Visibility = Visibility.Visible;
                         MessageBox.Show("Third measurement required.\n\nPlease take 5 seconds for respondent to re-position themselves for re-taking measurement.\n\n" +
                         "3rd measurement will be enabled after 5 seconds of closing this message.");
+                        waiting3rdMeasurement.Visibility = Visibility.Hidden;
                         Thread.Sleep(5000);
                         clear1.IsEnabled = false;
                         clear2.IsEnabled = false;
@@ -197,34 +199,36 @@ namespace SALTERservice
                     {
                         //Disable first two measurement boxes. Enable third measurement box, shift focus to third measurement, disable Done measuring Box, 
                         //enable submit final measurements.
-                        MessageBox.Show("Third measurement required.\n\nPlease take 5 seconds for respondent to re-position themselves for re-taking measurement.\n\n" +
-                        "3rd measurement will be enabled after 5 seconds of closing this message.");
-                        Thread.Sleep(5000);
                         W1Measurement.IsEnabled = false;
                         W2Measurement.IsEnabled = false;
+                        W1Measurement_TextBox.IsEnabled = false;
+                        W2Measurement_TextBox.IsEnabled = false;
+                        clear1.IsEnabled = false;
+                        clear2.IsEnabled = false;
                         button.IsEnabled = false;
                         button.Visibility = Visibility.Hidden;
                         button1.IsEnabled = false;
                         button1.Visibility = Visibility.Hidden;
                         button2.IsEnabled = false;
                         button2.Visibility = Visibility.Hidden;
+                        waiting3rdMeasurement.Visibility = Visibility.Visible;
+                        MessageBox.Show("Third measurement required.\n\nPlease take 5 seconds for respondent to re-position themselves for re-taking measurement.\n\n" +
+                        "3rd measurement will be enabled after 5 seconds of closing this message.");
+                        Thread.Sleep(5000);
+                        waiting3rdMeasurement.Visibility = Visibility.Hidden;
                         textBlock6.Visibility = Visibility.Visible;
                         textBlock5.Visibility = Visibility.Visible;
                         W3Measurement_TextBox.Visibility = Visibility.Visible;
                         clear3.Visibility = Visibility.Visible;
                         button3.Visibility = Visibility.Visible;
                         button3.IsEnabled = true;
-                        textBlock6_Copy1.Visibility = Visibility.Visible;
-                        W1Measurement_TextBox.IsEnabled = false;
-                        W2Measurement_TextBox.IsEnabled = false;
+                        textBlock6_Copy1.Visibility = Visibility.Visible;                        
                         W3Measurement.Visibility = Visibility.Hidden;
                         W3Measurement_TextBox.Visibility = Visibility.Visible;
                         W3Measurement.IsEnabled = false;
                         W3Measurement_TextBox.IsEnabled = true;
                         textBlock4.Visibility = Visibility.Visible;
-                        textBlock5.Visibility = Visibility.Visible;
-                        clear1.IsEnabled = false;
-                        clear2.IsEnabled = false;
+                        textBlock5.Visibility = Visibility.Visible;                        
                         clear3.Visibility = Visibility.Visible;
                     }
 
@@ -283,6 +287,8 @@ namespace SALTERservice
         bool regexOverride = false;//allows usage of text box clear operations to delte old results by not having regex applied to user input
         private void checkBox_Checked(object sender, RoutedEventArgs e)
         {
+            clear1.IsEnabled = true;
+            clear2.IsEnabled = true;
             regexOverride = true;
             manualMeasurement = true;
             Application.Current.Dispatcher.Invoke(() => { W1Measurement_TextBox.Clear(); W2Measurement_TextBox.Clear(); W3Measurement_TextBox.Clear(); });
@@ -299,6 +305,12 @@ namespace SALTERservice
 
         private void checkBox_Unchecked(object sender, RoutedEventArgs e)
         {
+            allMeasurements.Clear();
+            initialiseSurveyorInfo(); //re-initialise array for a return to BT input.
+            W1Measurement.Text = "-Empty-";
+            W2Measurement.Text = "-Empty-";
+            clear1.IsEnabled = true;
+            clear2.IsEnabled = true;
             regexOverride = true;
             manualMeasurement = false;
             Application.Current.Dispatcher.Invoke(() => { W1Measurement_TextBox.Clear(); W2Measurement_TextBox.Clear(); W3Measurement_TextBox.Clear(); });
@@ -1013,9 +1025,13 @@ namespace SALTERservice
                     if (clearWasclicked == false)
                     {
                         SetW2Measurement("Wait..");
+                        clear1.IsEnabled = false;
+                        clear2.IsEnabled = false;
                         MessageBox.Show("Please take 5 seconds for respondent to re-position themselves for re-taking measurement.\n\n" +
                         "2nd measurement will be enabled 5 seconds after closing this message.");
                         Thread.Sleep(5000);
+                        clear1.IsEnabled = true;
+                        clear2.IsEnabled = true;
                         SetW2Measurement("-Empty-");
                     }
                     else
