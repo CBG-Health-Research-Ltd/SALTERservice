@@ -86,7 +86,7 @@ namespace SALTERservice
             decimal measurement2;
             try
             {
-                if (arrayMeasurements[1, 1].Contains(".") && arrayMeasurements[2, 1].Contains("."))//Checking for decimal point existing. This could be improved?
+                if (arrayMeasurements[1, 1].Contains(".") && check1DecimalPlace(arrayMeasurements[1, 1]) == true && arrayMeasurements[2, 1].Contains(".") && check1DecimalPlace(arrayMeasurements[2, 1]) == true)//Checking for decimal point existing. This could be improved?
                 {
                     arrayMeasurements[1, 6] = "BluetoothInput";//Set as BluetoothInput for logging's sake
                     arrayMeasurements[2, 6] = "BluetoothInput";
@@ -132,7 +132,7 @@ namespace SALTERservice
                 else
                 {
                     //A decimal point is not present. BT transmission always sends a decimal point.
-                    MessageBox.Show("Incorrect weight format. \n\n Please ensure you've collected results using Salter Scales.\n\n" +
+                    MessageBox.Show("Incorrect weight format. \n\nPlease ensure you've collected results using Salter Scales.\n\n" +
                         "If entering manually, ensure the measurement is exactly what is shown on scales.\n\n" +
                         "The measurement expected is 1 decimal place. For example 70 kg must be input as 70.0");
                 }
@@ -155,7 +155,7 @@ namespace SALTERservice
                 arrayMeasurements[3, 3] = respondentInfo[1];
                 arrayMeasurements[3, 4] = respondentInfo[2];
                 arrayMeasurements[3, 5] = respondentInfo[3];
-                if (arrayMeasurements[3, 1].Contains("."))//Checking for decimal point existing
+                if (arrayMeasurements[3, 1].Contains(".") && check1DecimalPlace(arrayMeasurements[3, 1]) == true)//Checking for decimal point existing
                 {
                         arrayMeasurements[3, 6] = "BluetoothInput"; 
                         string csv = ArrayToCsv(arrayMeasurements);
@@ -198,7 +198,7 @@ namespace SALTERservice
                 char check1dp1stmeasurement = arrayMeasurements[1, 1][arrayMeasurements[1, 1].IndexOf(".") + 1];
 
                 //Checking for decimal point for all weight possibilities. Using same verification as BT measurement. 
-                if (arrayMeasurements[1, 1].Contains(".")  && arrayMeasurements[2, 1].Contains("."))
+                if (arrayMeasurements[1, 1].Contains(".") && check1DecimalPlace(arrayMeasurements[1, 1]) == true && arrayMeasurements[2, 1].Contains(".") && check1DecimalPlace(arrayMeasurements[2, 1]) == true)
                 {
                     measurement1 = ConvertStrToDec(arrayMeasurements[1, 1]);
                     measurement2 = ConvertStrToDec(arrayMeasurements[2, 1]);
@@ -251,7 +251,7 @@ namespace SALTERservice
                 }
                 else
                 {
-                    MessageBox.Show("Incorrect weight format. \n\n Please ensure you've collected results using Salter Scales.\n\n" +
+                    MessageBox.Show("Incorrect weight format. \n\nPlease ensure you've collected results using Salter Scales.\n\n" +
                         "If entering manually, ensure the measurement is exactly what is shown on scales.\n\n" +
                         "The measurement expected is 1 decimal place. For example 70 kg must be input as 70.0");
                 }
@@ -279,7 +279,7 @@ namespace SALTERservice
                 arrayMeasurements[3, 1] = W3Measurement_TextBox.Text;
                 arrayMeasurements[3, 6] = "ManualInput";
 
-                if ((arrayMeasurements[3, 1].Contains(".")))//Check for decimal place existing
+                if (arrayMeasurements[3, 1].Contains(".") && check1DecimalPlace(arrayMeasurements[3, 1]) == true)//Check for decimal place existing
                 {
                     string csv = ArrayToCsv(arrayMeasurements);
                     WriteCSVFile(csv);
@@ -287,7 +287,7 @@ namespace SALTERservice
                 }
                 else
                 {
-                    MessageBox.Show("Incorrect weight format. \n\n Please ensure you've collected results using Salter Scales.\n\n" +
+                    MessageBox.Show("Incorrect weight format.\n\nPlease ensure you've collected results using Salter Scales.\n\n" +
                         "If entering manually, ensure the measurement is exactly what is shown on scales.\n\n" +
                         "The measurement expected is 1 decimal place. For example 70 kg must be input as 70.0");
                 }
@@ -467,8 +467,7 @@ namespace SALTERservice
             previousInput2 = "";
         }
 
-
-
+  
         #region DeviceDiscovery
 
         private ObservableCollection<BluetoothLEDeviceDisplay> KnownDevices = new ObservableCollection<BluetoothLEDeviceDisplay>();
@@ -1281,6 +1280,26 @@ namespace SALTERservice
             }
         }
 
+        private bool check1DecimalPlace(string value)
+        {
+            try
+            {
+                int DPindex = value.IndexOf('.');
+                int i;
+                if (int.TryParse(value[DPindex + 1].ToString(), out i))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
 
         #endregion
 
