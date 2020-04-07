@@ -103,10 +103,18 @@ namespace SALTERservice
                         //Input has a greater than 1% difference therefore a third measurement is required.
                         isThirdMeasurement = true;
                         waiting3rdMeasurement.Visibility = Visibility.Visible;
+                        W1Measurement.IsEnabled = false;
+                        W2Measurement.IsEnabled = false;
+                        W1Measurement_TextBox.IsEnabled = false;
+                        W2Measurement_TextBox.IsEnabled = false;
+                        clear1.IsEnabled = false;
+                        clear2.IsEnabled = false;
+                        checkBox.IsEnabled = false;
                         MessageBox.Show("Third measurement required.\n\nPlease take 5 seconds for respondent to re-position themselves for re-taking measurement.\n\n" +
                         "3rd measurement will be enabled after 5 seconds of closing this message.");
                         waiting3rdMeasurement.Visibility = Visibility.Hidden;
                         Thread.Sleep(5000);
+                        checkBox.IsEnabled = true;
                         clear1.IsEnabled = false;
                         clear2.IsEnabled = false;
                         textBlock4.Visibility = Visibility.Visible;
@@ -142,6 +150,11 @@ namespace SALTERservice
         {
             try
             {
+                string[] respondentInfo = GetRespondentIdentifiers();
+                arrayMeasurements[3, 2] = respondentInfo[0];
+                arrayMeasurements[3, 3] = respondentInfo[1];
+                arrayMeasurements[3, 4] = respondentInfo[2];
+                arrayMeasurements[3, 5] = respondentInfo[3];
                 if (arrayMeasurements[3, 1].Contains("."))//Checking for decimal point existing
                 {
                         arrayMeasurements[3, 6] = "BluetoothInput"; 
@@ -151,7 +164,7 @@ namespace SALTERservice
                 }
                 else
                 {   //A decimal point is not present. BT transmission always sends a decimal point.
-                    MessageBox.Show("Incorrect weight format. \n\n Please ensure you've collected results using Salter Scales.\n\n" +
+                    MessageBox.Show("Incorrect weight format. \n\nPlease ensure you've collected results using Salter Scales.\n\n" +
                         "If entering manually, ensure the measurement is exactly what is shown on scales.\n\n" +
                         "The measurement expected is 1 decimal place. For example 70 kg must be input as 70.0");
                 }
@@ -212,9 +225,11 @@ namespace SALTERservice
                         button2.IsEnabled = false;
                         button2.Visibility = Visibility.Hidden;
                         waiting3rdMeasurement.Visibility = Visibility.Visible;
+                        checkBox.IsEnabled = false;
                         MessageBox.Show("Third measurement required.\n\nPlease take 5 seconds for respondent to re-position themselves for re-taking measurement.\n\n" +
                         "3rd measurement will be enabled after 5 seconds of closing this message.");
                         Thread.Sleep(5000);
+                        checkBox.IsEnabled = true;
                         waiting3rdMeasurement.Visibility = Visibility.Hidden;
                         textBlock6.Visibility = Visibility.Visible;
                         textBlock5.Visibility = Visibility.Visible;
@@ -225,6 +240,7 @@ namespace SALTERservice
                         textBlock6_Copy1.Visibility = Visibility.Visible;                        
                         W3Measurement.Visibility = Visibility.Hidden;
                         W3Measurement_TextBox.Visibility = Visibility.Visible;
+                        W3Measurement_TextBox.Focus();
                         W3Measurement.IsEnabled = false;
                         W3Measurement_TextBox.IsEnabled = true;
                         textBlock4.Visibility = Visibility.Visible;
@@ -252,9 +268,11 @@ namespace SALTERservice
         {
             try
             {
-                //bool notEmpty = String.IsNullOrEmpty(arrayMeasurements[1, 1].Substring(0, 2));
-                //bool notEmpty1 = String.IsNullOrEmpty(arrayMeasurements[2, 1].Substring(0, 2));
-                //Update to accomodate PIE format. Conversions might be neccessary
+                string[] respondentInfo = GetRespondentIdentifiers();
+                arrayMeasurements[3, 2] = respondentInfo[0];
+                arrayMeasurements[3, 3] = respondentInfo[1];
+                arrayMeasurements[3, 4] = respondentInfo[2];
+                arrayMeasurements[3, 5] = respondentInfo[3];
 
                 //Set measurements to be obtained from manual entry and set manual input type
                 arrayMeasurements[3, 0] = "WT";
@@ -326,6 +344,8 @@ namespace SALTERservice
         {
             clearWasclicked = true; //setting this to true allows us to override the set up warnings when clearing first BT measurement. It must be set to false where measurement added to array.
             regexOverride = true;
+            arrayMeasurements[1, 0] = null;
+            arrayMeasurements[1, 1] = null;
             if (manualMeasurement == true)
             {
                 
@@ -379,10 +399,15 @@ namespace SALTERservice
             //reset all measruements
             arrayMeasurements[1, 1] = null;
             arrayMeasurements[2, 1] = null;
+            arrayMeasurements[3, 0] = null;
             arrayMeasurements[3, 1] = null;
             arrayMeasurements[1, 6] = null;
             arrayMeasurements[2, 6] = null;
             arrayMeasurements[3, 6] = null;
+            arrayMeasurements[3, 2] = null;
+            arrayMeasurements[3, 3] = null;
+            arrayMeasurements[3, 4] = null;
+            arrayMeasurements[3, 5] = null;
             allMeasurements.Clear();
 
             //enable first 2 measurement fields
@@ -923,10 +948,10 @@ namespace SALTERservice
             arrayMeasurements[2, 3] = respondentInfo[1];
             arrayMeasurements[2, 4] = respondentInfo[2];
             arrayMeasurements[2, 5] = respondentInfo[3];
-            arrayMeasurements[3, 2] = respondentInfo[0];
-            arrayMeasurements[3, 3] = respondentInfo[1];
-            arrayMeasurements[3, 4] = respondentInfo[2];
-            arrayMeasurements[3, 5] = respondentInfo[3];
+            //arrayMeasurements[3, 2] = respondentInfo[0];
+            //arrayMeasurements[3, 3] = respondentInfo[1];
+            //arrayMeasurements[3, 4] = respondentInfo[2];
+            //arrayMeasurements[3, 5] = respondentInfo[3];
 
 
         }
@@ -1032,7 +1057,7 @@ namespace SALTERservice
                         Thread.Sleep(5000);
                         clear1.IsEnabled = true;
                         clear2.IsEnabled = true;
-                        SetW2Measurement("-Empty-");
+                        SetW2Measurement("-Ready-");
                     }
                     else
                     {
