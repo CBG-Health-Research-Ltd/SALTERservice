@@ -1153,8 +1153,8 @@ namespace SALTERservice
         //Salter scales sepcific csv file write
         private async void WriteCSVFile(string csvMeasurements)
         {
-            System.IO.Directory.CreateDirectory(@"C:\BodyMeasurements\WeightMeasurements");
-            string CSVFileName = @"C:\BodyMeasurements\WeightMeasurements\" + "WeightMeasurements_" + DateTime.Now.ToString("yyyy-MM-ddTHH-mm-ss") + ".csv";
+            System.IO.Directory.CreateDirectory(@"C:\NZHS\BodyMeasurements\WeightMeasurements");
+            string CSVFileName = @"C:\NZHS\BodyMeasurements\WeightMeasurements\" + "WeightMeasurements_" + DateTime.Now.ToString("yyyy-MM-ddTHH-mm-ss") + ".csv";
 
             System.IO.File.WriteAllText(CSVFileName, csvMeasurements);
         }
