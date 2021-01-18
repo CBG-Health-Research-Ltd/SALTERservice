@@ -49,6 +49,9 @@ namespace SALTERservice
 
         }
 
+        //Most of the UI handling below, in hindsight this region could be much cleaner, see BM57 methods, below could be more compact
+
+        #region UI things
         //Update UI to display connection status
         public void updateConnectionStatus(string text)
         {
@@ -467,7 +470,9 @@ namespace SALTERservice
             previousInput2 = "";
         }
 
-  
+        #endregion
+
+        //Handling the bluetooth discovery of the SALTER Scales, finds the service that needs to be connected to
         #region DeviceDiscovery
 
         private ObservableCollection<BluetoothLEDeviceDisplay> KnownDevices = new ObservableCollection<BluetoothLEDeviceDisplay>();
@@ -684,6 +689,8 @@ namespace SALTERservice
         }
         #endregion
 
+        //Connects to the service and finds the appropriate characteristic (sub-service)
+
         #region DeviceConnection
 
         private BluetoothLEDevice bluetoothLeDevice;
@@ -779,6 +786,11 @@ namespace SALTERservice
         }
 
         #endregion
+
+        //Connects to the characteristic and declares characteristic value changed event which then handles the particular case of salter transmission. Searches for 5 consecutive 
+        //equal measurements and then gets the final measurement of thee 5 consecutive equal measurements. Sometimes the scale seems to not submit what it shown on screen. Accuracy of measurement
+        //is drastically increased if respondent stands nice and still on the scales. A few functions in region below could be re-written or think of a new method for final result retrieval if
+        //too much innacuracy is found in field.
 
         #region Data Retrieval
 
