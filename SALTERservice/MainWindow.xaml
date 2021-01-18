@@ -16,7 +16,7 @@
         <TextBlock x:Name="W1Measurement" HorizontalAlignment="Left" Margin="307,208,0,0" Text="-Empty-" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="20"/>
         <TextBlock x:Name="W2Measurement" HorizontalAlignment="Left" Margin="307,291,0,0" Text="-Empty-" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="20"/>
         <TextBlock x:Name="Connectionstatus" HorizontalAlignment="Left" Margin="295,133,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="Disconnected" FontSize="18"/>
-        <TextBlock x:Name="textBlock4" HorizontalAlignment="Left" Margin="69,368,0,0" Text="Text will go here which alerts surveyor to take the third measurement" TextWrapping="Wrap" VerticalAlignment="Top" Width="368" FontSize="16" Visibility="Hidden" Height="43"/>
+        <TextBlock x:Name="textBlock4" HorizontalAlignment="Left" Margin="69,368,0,0" Text="The first two measurements are not within 1% of eachother. Please submit a third measurement." TextWrapping="Wrap" VerticalAlignment="Top" Width="368" FontSize="16" Visibility="Hidden" Height="43"/>
         <TextBlock x:Name="textBlock5" HorizontalAlignment="Left" Margin="73,452,0,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="20" Visibility="Hidden"><Run Text="3rd Measurement"/><Run Text=":"/></TextBlock>
         <TextBlock x:Name="W3Measurement" HorizontalAlignment="Left" Margin="307,452,0,0" Text="-Empty-" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="20" Visibility="Hidden"/>
         <Button x:Name="button1" Content="Done Measuring" Margin="185,519,155,0" VerticalAlignment="Top" FontSize="20" Click="button1_Click" Height="38" Visibility="Hidden"/>

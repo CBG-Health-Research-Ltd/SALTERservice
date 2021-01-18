@@ -1063,11 +1063,13 @@ namespace SALTERservice
                         SetW2Measurement("Wait..");
                         clear1.IsEnabled = false;
                         clear2.IsEnabled = false;
+                        checkBox.IsEnabled = false;
                         MessageBox.Show("Please take 5 seconds for respondent to re-position themselves for re-taking measurement.\n\n" +
                         "2nd measurement will be enabled 5 seconds after closing this message.");
                         Thread.Sleep(5000);
                         clear1.IsEnabled = true;
                         clear2.IsEnabled = true;
+                        checkBox.IsEnabled = true;
                         SetW2Measurement("-Ready-");
                     }
                     else
